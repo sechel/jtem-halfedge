@@ -1,14 +1,13 @@
 package de.jtem.halfedge;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.Test;
 
 import de.jtem.halfedge.util.HalfEdgeUtils;
 
-public class TestBasicStuff {
+public class TestBasicStuff  extends TestCase {
 	
 	static public class MyVertex extends Vertex<MyVertex,MyEdge,MyFace> {}
 

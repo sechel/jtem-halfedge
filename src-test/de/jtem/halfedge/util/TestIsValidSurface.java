@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
 import de.jtem.halfedge.Edge;
@@ -12,7 +14,7 @@ import de.jtem.halfedge.Face;
 import de.jtem.halfedge.HalfEdgeDataStructure;
 import de.jtem.halfedge.Vertex;
 
-public class TestIsValidSurface {
+public class TestIsValidSurface extends TestCase {
 
 	// Further tests of isValidSurface are contained in TestBasicStuff.
 	

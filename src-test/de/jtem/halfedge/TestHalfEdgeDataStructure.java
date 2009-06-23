@@ -1,12 +1,12 @@
 package de.jtem.halfedge;
 
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
 import org.junit.Test;
 
 import de.jtem.halfedge.util.HalfEdgeUtils;
 
-public class TestHalfEdgeDataStructure {
+public class TestHalfEdgeDataStructure  extends TestCase {
 	
 	public static class MyVertex extends Vertex<MyVertex,MyEdge,MyFace> {}
 	public static class MyEdge extends Edge<MyVertex,MyEdge,MyFace> {}

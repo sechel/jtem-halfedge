@@ -1,12 +1,26 @@
 package de.jtem.halfedge.util;
 
-import static org.junit.Assert.*;
+import static de.jtem.halfedge.util.HalfEdgeUtils.addCube;
+import static de.jtem.halfedge.util.HalfEdgeUtils.addDodecahedron;
+import static de.jtem.halfedge.util.HalfEdgeUtils.addIcosahedron;
+import static de.jtem.halfedge.util.HalfEdgeUtils.addNGon;
+import static de.jtem.halfedge.util.HalfEdgeUtils.addOctahedron;
+import static de.jtem.halfedge.util.HalfEdgeUtils.addTetrahedron;
+import static de.jtem.halfedge.util.HalfEdgeUtils.boundaryEdges;
+import static de.jtem.halfedge.util.HalfEdgeUtils.constructFaceByVertices;
+import static de.jtem.halfedge.util.HalfEdgeUtils.fillAllHoles;
+import static de.jtem.halfedge.util.HalfEdgeUtils.fillHole;
+import static de.jtem.halfedge.util.HalfEdgeUtils.incomingEdges;
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
-import de.jtem.halfedge.*;
-import static de.jtem.halfedge.util.HalfEdgeUtils.*;
+import de.jtem.halfedge.Edge;
+import de.jtem.halfedge.Face;
+import de.jtem.halfedge.HalfEdgeDataStructure;
+import de.jtem.halfedge.Vertex;
 
-public class TestHalfedgeUtils {
+public class TestHalfedgeUtils  extends TestCase{
 
 //	@Test
 //	public void testNeighboringVertices() {

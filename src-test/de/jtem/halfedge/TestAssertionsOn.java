@@ -1,10 +1,11 @@
 package de.jtem.halfedge;
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
+
 import org.junit.Test;
 
 
 
-public class TestAssertionsOn {
+public class TestAssertionsOn  extends TestCase {
 
 	@Test
 	public void testAssertionsOn() {
