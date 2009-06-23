@@ -1,5 +1,7 @@
 /**
+ * <!-- teaser start -->
  * Provides the classes for a half-edge data structure. 
+ * <!-- teaser end -->
  * 
  * <h3>Cell decompositions of surfaces</h3>
  * 
