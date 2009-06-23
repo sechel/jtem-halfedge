@@ -169,7 +169,7 @@ ifeq ($(strip $(TESTDIR)),)
 else
 	@for test in $(TESTS); do \
 		echo "- JUnitTest: $$test"; \
-		java -classpath `find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR) \
+		java -ea -classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR)" \
 			junit.textui.TestRunner $$test || { echo "JUnit Test failed!" ; exit 1; } \
 		done;
 	@if [ -n "$(ext_)" ]; then echo "WARNING: some tests where exluded, see variable EXCLTESTS"; fi
