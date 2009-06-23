@@ -214,7 +214,7 @@ web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html
 	if [ "" = "$$date" ]; then date=$(call svndate, $(PACKAGEHTML)); fi; \
 	if [ "" = "$$date" ]; then date=`date -r $< +%F`; fi; \
 	$(call exec_on_server,touch -d $$date $(SRVDIR)/$(NAME)/content.html $(SRVDIR)/projects.html)
-	@if [ -f  releasnotes.txt ]; then $(call copy_to_website, releasnotes.txt, downloads/$(NAME)); fi
+	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt, downloads/$(NAME)); fi
 	@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
@@ -233,20 +233,20 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@status=`svn status -u 2>&1 | grep -v "?" | head -n -1`; \
 		if [ -n "$$status" ]; then \
 	    	echo "STOP: Synchronize with repository first!"; exit 1 ; fi
-	@grep `cat $(RELDIR)/current.txt` releasnotes.txt 1>/dev/null 2>&1 || \
-		if [ -f releasnotes.txt ]; then mv releasnotes.txt releasnotes-old.txt; fi; \
-		cat $(RELDIR)/current.txt > releasnotes.txt; \
-		if [ -f releasnotes-old.txt ]; then cat releasnotes-old.txt >> releasnotes.txt; fi
+	@grep `cat $(RELDIR)/current.txt` releasenotes.txt 1>/dev/null 2>&1 || \
+		if [ -f releasenotes.txt ]; then mv releasenotes.txt releasnotes-old.txt; fi; \
+		cat $(RELDIR)/current.txt > releasenotes.txt; \
+		if [ -f releasnotes-old.txt ]; then cat releasnotes-old.txt >> releasenotes.txt; fi
 	@$(call copy_to_website, \
 		$(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR)/$(NAME).zip $(RELDIR)/$(NAME)-api.tgz,downloads)
-	@$(call copy_to_website, $(RELDIR)/$(NAME).jar,downloads/$(NAME)/$(NAME)`cat $(RELDIR)/current.txt`.jar)
-	@$(call copy_to_website, $(RELDIR)/$(NAME).tgz,downloads/$(NAME)/$(NAME)`cat $(RELDIR)/current.txt`.tgz)
-	@$(call copy_to_website, $(RELDIR)/$(NAME).zip,downloads/$(NAME)/$(NAME)`cat $(RELDIR)/current.txt`.zip)
-	@$(call copy_to_website, $(RELDIR)/$(NAME)-api.tgz,downloads/$(NAME)/$(NAME)`cat $(RELDIR)/current.txt`-api.tgz)
+	@$(call copy_to_website, $(RELDIR)/$(NAME).jar,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.jar)
+	@$(call copy_to_website, $(RELDIR)/$(NAME).tgz,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.tgz)
+	@$(call copy_to_website, $(RELDIR)/$(NAME).zip,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.zip)
+	@$(call copy_to_website, $(RELDIR)/$(NAME)-api.tgz,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`-api.tgz)
 	@$(call exec_on_server, rm -rf $(SRVDIR)/$(NAME)/api)
 	@$(call copy_to_website, $(DOCDIR), $(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
-	@$(call copy_to_website, releasnotes.txt,downloads/$(NAME))
+	@$(call copy_to_website, releasenotes.txt,downloads/$(NAME))
 	@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	@echo " - release `cat rel/current.txt` succesfully deployed."
 
@@ -283,7 +283,7 @@ $(RELDIR)/manifest.txt: $(RELDIR)/current.txt
 .PHONY: $(RELDIR)/current.txt
 $(RELDIR)/current.txt:
 	@if [ ! -d $(RELDIR) ]; then mkdir $(RELDIR); fi
-	@echo `date +%F`_rel`svn info --xml -r HEAD  \
+	@echo `date +%F`_rev`svn info --xml -r HEAD  \
 		| sed -n -e '/<entry/,/>/p' \
 		| sed -n -e '/revision/s/.*"\([0-9]*\)".*/\1/p'`\
 		> $(RELDIR)/current.txt
