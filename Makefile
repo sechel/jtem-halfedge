@@ -12,7 +12,7 @@ DOCDIR=doc
 
 #the snippets for the webpage are put here
 WEBDIR=web
-#the html page to read the wabsnippets of (usually a package.html) 
+#the html page to read the wabsnippets of (package-summary.html) 
 PACKAGEHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
 #location of the web site, may be empty
 SERVER=
@@ -63,11 +63,18 @@ JTEMURL=http://www.math.tu-berlin.de/jtem
 SOURCEFILES=$(shell find $(SRCDIRS) -name '*.java')
 
 TESTSOURCEFILES=$(shell find $(TESTDIR) -name '*.java' 2> /dev/null)
-ALLTESTS=$(shell  find $(TESTDIR) -name '*Test*.java' 2> /dev/null\
-  | sed -e 's,$(TESTDIR)/,,g' -e 's/.java//g' -e 'y,/,.,' )
-et_=$(addprefix %,$(EXCLTESTS:.java=))
-TESTS=$(filter-out $(et_), $(ALLTESTS))
-ext_=$(filter $(et_), $(ALLTESTS))
+ifeq ($(strip $(TESTDIR)),) 
+  ALLTESTS=
+  et_=
+  TESTS=
+  ext_= 
+else
+  ALLTESTS=$(shell  find $(TESTDIR) -name '*Test*.java' 2> /dev/null\
+    | sed -e 's,$(TESTDIR)/,,g' -e 's/.java//g' -e 'y,/,.,' )
+  et_=$(addprefix %,$(EXCLTESTS:.java=))
+  TESTS=$(filter-out $(et_), $(ALLTESTS))
+  ext_=$(filter $(et_), $(ALLTESTS))
+endif
   
 DEPNAMES=$(shell cat dependencies.txt 2> /dev/null | grep -v '^\#' )
 DEPS=$(patsubst %,$(LIBDIR)/%.jar, $(DEPNAMES))
@@ -75,11 +82,12 @@ DOCPACKAGES=$(shell find $(SRCDIRS) -name '*.java' -printf "%h\n" | \
 	sed -e 'y,/,.,' $(foreach d,$(SRCDIRS), -e 's/$(d)\.//') | sort -u)
 DOWNLOADDEPS=$(JTEMURL)/downloads
 
+
 #function to copy to SRVDIR
 ifeq ($(strip $(SERVER)),)
-  copy_to_website=cp -a $(1) $(SRVDIR)/$(strip $(2)) 
+  copy_to_website=cp -a $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 else  
-  copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2))
+  copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 endif
 #function to execute on SERVER 
 ifeq ($(strip $(SERVER)),)
@@ -104,7 +112,7 @@ help:
 	@echo "compiled classes in (BINDIR): $(BINDIR)"
 	@echo "generat api documentation in (DOCDIR): $(DOCDIR)"
 	@echo "generat snippets for the web site in (WEBDIR): $(WEBDIR)"
-	@echo "package.html to produce the web snipptes (PACKAGEHTML): $(PACKAGEHTML)"
+	@echo "package-summary.html to produce the web snipptes (PACKAGEHTML): $(PACKAGEHTML)"
 	@echo "server of the website - may be empty(SERVER): $(SERVER)"
 	@echo "directory of the web site on the server (SRVDIR): $(SRVDIR)"
 	@echo "directory for the dependencies - put other archives here too (LIBDIR): $(LIBDIR)"
@@ -143,10 +151,11 @@ $(BINDIR): $(SOURCEFILES) | $(DEPS)
 	@if [ ! -d $(BINDIR) ]; then mkdir $(BINDIR); fi
 	@cp=`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null` ; \
 	javac $(JAVACOPTS) \
-		`if [ -n "$${cp}" ]; then echo -classpath $${cp}; fi` \
+		`if [ -n "$${cp}" ]; then echo -classpath "$${cp}"; fi` \
 		-d $(BINDIR)/ \
 		$(SOURCEFILES) || { rm -rf $(BINDIR); echo "ERROR: compilation failed, folder \"$(BINDIR)\" removed"; exit 1; }
 	@touch $(BINDIR)
+	@echo " - compilation of sources in \"$(SRCDIRS)\" successfull, class files in \"$(BINDIR)\" "
 	
 
 # --- test ---
@@ -155,14 +164,15 @@ $(BINDIR): $(SOURCEFILES) | $(DEPS)
 .PHONY: test
 test: .testscompiled
 #only runs tests if $(TESTDIR) is non empty
-ifneq ($(strip $(TESTDIR)),)
+ifeq ($(strip $(TESTDIR)),)
+	@echo "No tests, variable TESTDIR is empty."
+else
 	@for test in $(TESTS); do \
 		echo "- JUnitTest: $$test"; \
 		java -classpath `find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR) \
 			junit.textui.TestRunner $$test || { echo "JUnit Test failed!" ; exit 1; } \
 		done;
 	@if [ -n "$(ext_)" ]; then echo "WARNING: some tests where exluded, see variable EXCLTESTS"; fi
-	
 endif
 
 .testscompiled: $(BINDIR) $(TESTSOURCEFILES)
@@ -170,10 +180,11 @@ endif
 ifneq ($(strip $(TESTDIR)),)
 	@if [ ! -d $(TESTBINDIR) ]; then mkdir $(TESTBINDIR); fi
 	@javac $(JAVACOPTS) \
-		-classpath `find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR) \
+		-classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR)" \
 		-d $(TESTBINDIR)/ \
 		$(TESTSOURCEFILES)
 	@touch .testscompiled 
+	@echo " - compilation of test in \"$(TESTDIR)\" successfull, class files in \"$(TESTBINDIR)\" "
 endif
 
 
@@ -185,7 +196,7 @@ javadoc: $(DOCDIR)
 $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS) 
 	@if [ ! -d $(DOCDIR) ]; then mkdir $(DOCDIR); fi
 	@javadoc $(JAVADOCOPTS) \
-		-d $(DOCDIR) -classpath $(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null ` \
+		-d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
 		-sourcepath `echo $(SRCDIRS) | tr \  :` \
 		$(DOCPACKAGES)
 	@touch $(DOCDIR)
@@ -198,18 +209,18 @@ $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS)
 web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html 
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
-	@date=$(call svndate, $(subst -summary,,$(subst $(DOCDIR),$(firstword $(SRCDIRS)),$(PACKAGEHTML)))); \
+	@date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package.html); \
+	if [ "" = "$$date" ]; then date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package-info.java); fi;\
+	if [ "" = "$$date" ]; then date=$(call svndate, $(PACKAGEHTML)); fi; \
 	if [ "" = "$$date" ]; then date=`date -r $< +%F`; fi; \
 	$(call exec_on_server,touch -d $$date $(SRVDIR)/$(NAME)/content.html $(SRVDIR)/projects.html)
 	@if [ -f  releasnotes.txt ]; then $(call copy_to_website, releasnotes.txt, downloads/$(NAME)); fi
 	@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	
-$(PACKAGEHTML): $(DOCDIR)
-	
-$(WEBDIR)/teaser.html: $(PACKAGEHTML) 
+$(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
 	@sed -e '0,/teaser start/d;/teaser end/,$$d' $(PACKAGEHTML) > $(WEBDIR)/teaser.html
-$(WEBDIR)/content.html: $(PACKAGEHTML)
+$(WEBDIR)/content.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
 	@sed -e '0,/teaser start/d; /START OF BOTTOM NAVBAR/,$$d' \
 		-e 's,\(\.\./\)\+,$(JTEMURL)/$(NAME)/api/,g' \
@@ -237,7 +248,7 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
 	@$(call copy_to_website, releasnotes.txt,downloads/$(NAME))
 	@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
-	@echo  release `cat rel/current.txt` succesfully deployed
+	@echo " - release `cat rel/current.txt` succesfully deployed."
 
 #jar of compiled classes
 $(RELDIR)/$(NAME).jar: $(BINDIR) $(RELDIR)/manifest.txt
