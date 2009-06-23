@@ -1,14 +1,11 @@
 package de.jtem.halfedge;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
 
-import de.jtem.halfedge.Edge;
-import de.jtem.halfedge.Face;
-import de.jtem.halfedge.HalfEdgeDataStructure;
-import de.jtem.halfedge.Vertex;
 import de.jtem.halfedge.util.HalfEdgeUtils;
 
 public class TestBasicStuff {
@@ -80,15 +77,15 @@ public class TestBasicStuff {
 	
 //		System.err.println(heds);
 
-		for (Face<?,?,?> f : heds.getFaces()) {
+		for (Face<MyVertex,MyEdge,MyFace> f : heds.getFaces()) {
 //			System.err.println(f);
 			assertTrue(f == heds.getFace(f.getIndex()));
 		}
-		for (Edge<?,?,?> e : heds.getEdges()) {
+		for (Edge<MyVertex,MyEdge,MyFace> e : heds.getEdges()) {
 //			System.err.println(e);
 			assertTrue(e == heds.getEdge(e.getIndex()));
 		}
-		for (Vertex<?,?,?> v : heds.getVertices()) {
+		for (Vertex<MyVertex,MyEdge,MyFace> v : heds.getVertices()) {
 //			System.err.println(v);
 			assertTrue(v == heds.getVertex(v.getIndex()));
 		}
