@@ -234,15 +234,15 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 		if [ -n "$$status" ]; then \
 	    	echo "STOP: Synchronize with repository first!"; exit 1 ; fi
 	@grep `cat $(RELDIR)/current.txt` releasenotes.txt 1>/dev/null 2>&1 || \
-		if [ -f releasenotes.txt ]; then mv releasenotes.txt releasnotes-old.txt; fi; \
+		if [ -f releasenotes.txt ]; then mv releasenotes.txt releasenotes-old.txt; fi; \
 		cat $(RELDIR)/current.txt > releasenotes.txt; \
-		if [ -f releasnotes-old.txt ]; then cat releasnotes-old.txt >> releasenotes.txt; fi
+		if [ -f releasenotes-old.txt ]; then cat releasenotes-old.txt >> releasenotes.txt; fi
 	@$(call copy_to_website, \
 		$(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR)/$(NAME).zip $(RELDIR)/$(NAME)-api.tgz,downloads)
 	@$(call copy_to_website, $(RELDIR)/$(NAME).jar,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.jar)
 	@$(call copy_to_website, $(RELDIR)/$(NAME).tgz,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.tgz)
 	@$(call copy_to_website, $(RELDIR)/$(NAME).zip,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.zip)
-	@$(call copy_to_website, $(RELDIR)/$(NAME)-api.tgz,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`-api.tgz)
+	@$(call copy_to_website, $(RELDIR)/$(NAME)-api.tgz,downloads/$(NAME)/$(NAME)-api_`cat $(RELDIR)/current.txt`.tgz)
 	@$(call exec_on_server, rm -rf $(SRVDIR)/$(NAME)/api)
 	@$(call copy_to_website, $(DOCDIR), $(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
