@@ -32,7 +32,7 @@ TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
 #where to find junit.jar
-JUNIT=$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
+JUNIT=lib/junit.jar #$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
 
 #compile options
 JAVACOPTS=-target 1.5 -source 1.5
