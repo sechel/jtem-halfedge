@@ -1,8 +1,5 @@
 package de.jtem.halfedge.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
 import junit.framework.TestCase;
