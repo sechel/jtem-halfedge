@@ -13,7 +13,7 @@ DOCDIR=doc
 #the snippets for the webpage are put here
 WEBDIR=web
 #the package summary file (source)
-PACKAGEHTML=$(DOCDIR)/de/jtem/$(NAME)/package-info.java
+PACKAGEHTML=$(word 1,$(SRCDIRS))/de/jtem/$(NAME)/package-info.java
 #the html page to read the websnippets of 
 #(usually the processed PACKAGEHTML: package-summary.html) 
 PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
@@ -44,7 +44,6 @@ JAVACOPTS=-target 1.5 -source 1.5
 #javadoc options
 JAVADOCOPTS= -author -protected -nodeprecated -nodeprecatedlist \
   -windowtitle 'de.jtem.$(NAME) package API documentation' \
-  -overview $(PACKAGEHTML) \
   -header '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -footer '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -bottom '<font size=-1><b><a href="mailto:jtem@math.tu-berlin.de?subject=$(NAME):">jTEM</a></b></font>' \
@@ -170,7 +169,7 @@ test: .testscompiled
 ifeq ($(strip $(TESTDIR)),)
 	@echo "No tests, variable TESTDIR is empty."
 else
-	for test in $(TESTS); do \
+	@for test in $(TESTS); do \
 		echo "- JUnitTest: $$test"; \
 		java -ea -classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR)" \
 			junit.textui.TestRunner $$test || { echo "JUnit Test failed!" ; exit 1; } \
@@ -182,7 +181,7 @@ endif
 #only compile tests if $(TESTDIR) is non empty
 ifneq ($(strip $(TESTDIR)),)
 	@if [ ! -d $(TESTBINDIR) ]; then mkdir $(TESTBINDIR); fi
-	javac $(JAVACOPTS) \
+	@javac $(JAVACOPTS) \
 		-classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR)" \
 		-d $(TESTBINDIR)/ \
 		$(TESTSOURCEFILES)
