@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Assert;
-
 import de.jtem.halfedge.Edge;
 import de.jtem.halfedge.Face;
 import de.jtem.halfedge.HalfEdgeDataStructure;
@@ -140,11 +138,11 @@ public final class HalfEdgeUtils {
 		int ne = heds.numEdges();
 		int nf = heds.numFaces();
 		int nv = heds.numVertices();
-		Assert.assertTrue(nv > 0 && ne > 0 && nf > 0);
+		assert (nv > 0 && ne > 0 && nf > 0);
 		boolean[] vertexMark = new boolean[nv];
 		boolean[] edgeMark = new boolean[ne];
 		boolean[] faceMark = new boolean[nf];
-		Assert.assertFalse(edgeMark[0]); // false should be the default value
+		assert (false == (edgeMark[0])); // false should be the default value
 		for (Edge<?,?,?> e : heds.getEdges()) {
 			if (edgeMark[e.getIndex()]) {
 				// the cycle of this edge has already been treated
@@ -168,7 +166,7 @@ public final class HalfEdgeUtils {
 			}
 		}
 		edgeMark = new boolean[ne]; // initialize to false again
-		Assert.assertFalse(edgeMark[0]); // false should be the default value
+		assert (false == (edgeMark[0])); // false should be the default value
 		for (Edge<?,?,?> e : heds.getEdges()) {
 			if (edgeMark[e.getIndex()]) {
 				// the cycle of this edge has already been treated
