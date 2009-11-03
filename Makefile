@@ -32,7 +32,7 @@ TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
 #where to find junit.jar
-JUNIT=lib/junit.jar #$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
+JUNIT=junit.jar #$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
 
 #compile options
 JAVACOPTS=-target 1.5 -source 1.5
@@ -95,11 +95,6 @@ ifeq ($(strip $(SERVER)),)
 else  
   exec_on_server=ssh $(SERVER) $(1)
 endif
-#function to get last change date from svn
-svndate=`( svn --xml info $(1) 2> /dev/null  | grep "<text-updated>"  \
-	|| svn --xml info $(1) 2> /dev/null  | grep "<date>" )  \
-	|  sed -e 's/.*>\(....-..-..\).*/\1/'`
-
 
 # ---Targets --
 
@@ -209,13 +204,8 @@ $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS)
 web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html 
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
-#@date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package.html); \
-#if [ "" = "$$date" ]; then date=$(call svndate, $(DOCDIR)/de/jtem/$(NAME)/package-info.java); fi;\
-#if [ "" = "$$date" ]; then date=$(call svndate, $(PACKAGEHTML)); fi; \
-#if [ "" = "$$date" ]; then date=`date -r $< +%F`; fi; \
-#$(call exec_on_server,touch -d $$date $(SRVDIR)/$(NAME)/content.html $(SRVDIR)/projects.html)
 	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt, downloads/$(NAME)); fi
-#@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
@@ -247,7 +237,7 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@$(call copy_to_website, $(DOCDIR), $(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
 	@$(call copy_to_website, releasenotes.txt,downloads/$(NAME))
-#@$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
 	@echo " - release `cat rel/current.txt` succesfully deployed."
 
 #jar of compiled classes
