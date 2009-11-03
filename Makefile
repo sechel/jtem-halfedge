@@ -92,7 +92,7 @@ DOWNLOADDEPS=$(JTEMURL)/downloads
 
 #function to copy to SRVDIR
 ifeq ($(strip $(SERVER)),)
-  copy_to_website=cp $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
+  copy_to_website=cp -R $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 else  
   copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 endif
@@ -152,7 +152,7 @@ binaries: $(BINDIR)
 $(BINDIR): $(SOURCEFILES) | $(DEPS)
 	@if [ ! -d $(BINDIR) ]; then mkdir $(BINDIR); fi
 	@cp=`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null` ; \
-	@javac $(JAVACOPTS) \
+	javac $(JAVACOPTS) \
 		`if [ -n "$${cp}" ]; then echo -classpath "$${cp}"; fi` \
 		-d $(BINDIR)/ \
 		$(SOURCEFILES) || { rm -rf $(BINDIR); echo "ERROR: compilation failed, folder \"$(BINDIR)\" removed"; exit 1; }
