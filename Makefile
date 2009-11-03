@@ -12,8 +12,12 @@ DOCDIR=doc
 
 #the snippets for the webpage are put here
 WEBDIR=web
-#the html page to read the wabsnippets of (package-summary.html) 
-PACKAGEHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
+#the package summary file (source)
+PACKAGEHTML=$(word 1,$(SRCDIRS))/de/jtem/$(NAME)/package.html
+#the html page to read the websnippets of 
+#(usually the processed PACKAGEHTML: package-summary.html) 
+PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
+
 #location of the web site, may be empty
 SERVER=
 #directory of the website on the server, or local if SERVER is empty
@@ -40,11 +44,15 @@ JAVACOPTS=-target 1.5 -source 1.5
 #javadoc options
 JAVADOCOPTS= -author -protected -nodeprecated -nodeprecatedlist \
   -windowtitle 'de.jtem.$(NAME) package API documentation' \
+  -overview $(PACKAGEHTML) \
   -header '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -footer '<a href="http://www.jtem.de/$(NAME)" target="_top">$(NAME)</a> by<br><a href="http://www.jtem.de" target="_top">jTEM</a>' \
   -bottom '<font size=-1><b><a href="mailto:jtem@math.tu-berlin.de?subject=$(NAME):">jTEM</a></b></font>' \
   -link http://java.sun.com/javase/6/docs/api/ \
-  $(foreach d, $(DEPNAMES), -link $(JTEMURL)/$(d)/api)
+  $(foreach d, $(DEPNAMES), -link $(JTEMURL)/$(d)/api) \
+  -d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
+  -sourcepath `echo $(SRCDIRS) | tr \  :` \
+  $(DOCPACKAGES)
 	   
 
 #things that are removed recursively by the clean target
@@ -93,21 +101,21 @@ endif
 ifeq ($(strip $(SERVER)),)
   exec_on_server=$(1) 
 else  
-  exec_on_server=ssh $(SERVER) $(1)
+  exec_on_server=ssh $(SERVER) "$(1)"
 endif
 
 # ---Targets --
 
 .PHONY: help
 help:
-	@cat README
+	@cat README.txt
 	@echo "CURRENT VALUES OF SOME VARIABLES"; echo "================================"; echo
 	@echo "project name (NAME): $(NAME)"
 	@echo "find sources in (SRCDIRS): $(SRCDIRS)"
 	@echo "compiled classes in (BINDIR): $(BINDIR)"
 	@echo "generat api documentation in (DOCDIR): $(DOCDIR)"
 	@echo "generat snippets for the web site in (WEBDIR): $(WEBDIR)"
-	@echo "package-summary.html to produce the web snipptes (PACKAGEHTML): $(PACKAGEHTML)"
+	@echo "package-summary.html to produce the web snipptes (PACKAGESUMHTML): $(PACKAGESUMHTML)"
 	@echo "server of the website - may be empty(SERVER): $(SERVER)"
 	@echo "directory of the web site on the server (SRVDIR): $(SRVDIR)"
 	@echo "directory for the dependencies - put other archives here too (LIBDIR): $(LIBDIR)"
@@ -190,10 +198,7 @@ endif
 javadoc: $(DOCDIR)
 $(DOCDIR): $(shell find $(SRCDIRS)  -path "*.svn" -prune -o -print ) | $(DEPS) 
 	@if [ ! -d $(DOCDIR) ]; then mkdir $(DOCDIR); fi
-	@javadoc $(JAVADOCOPTS) \
-		-d $(DOCDIR) -classpath "$(BINDIR):`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null `" \
-		-sourcepath `echo $(SRCDIRS) | tr \  :` \
-		$(DOCPACKAGES)
+	@javadoc $(JAVADOCOPTS)
 	@touch $(DOCDIR)
 
 
@@ -209,12 +214,12 @@ web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
-	@sed -e '0,/teaser start/d;/teaser end/,$$d' $(PACKAGEHTML) > $(WEBDIR)/teaser.html
+	@sed -e '0,/teaser start/d;/teaser end/,$$d' $(PACKAGESUMHTML) > $(WEBDIR)/teaser.html
 $(WEBDIR)/content.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
 	@sed -e '0,/teaser start/d; /START OF BOTTOM NAVBAR/,$$d' \
 		-e 's,\(\.\./\)\+,$(JTEMURL)/$(NAME)/api/,g' \
-		$(PACKAGEHTML) > $(WEBDIR)/content.html
+		$(PACKAGESUMHTML) > $(WEBDIR)/content.html
 
 
 # --- release ---
@@ -222,7 +227,8 @@ $(WEBDIR)/content.html: $(DOCDIR)
 release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR)/$(NAME).zip $(RELDIR)/$(NAME)-api.tgz $(RELDIR)/current.txt
 	@status=`svn status -u 2>&1 | grep -v "?" | head -n -1`; \
 		if [ -n "$$status" ]; then \
-	    	echo "STOP: Synchronize with repository first!"; exit 1 ; fi
+	    	echo "STOP: Synchronize with repository first!"; exit 1 ;\
+	    	else echo "- svn is synchronized"; fi
 	@grep `cat $(RELDIR)/current.txt` releasenotes.txt 1>/dev/null 2>&1 || \
 		if [ -f releasenotes.txt ]; then mv releasenotes.txt releasenotes-old.txt; fi; \
 		cat $(RELDIR)/current.txt > releasenotes.txt; \
@@ -233,7 +239,7 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@$(call copy_to_website, $(RELDIR)/$(NAME).tgz,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.tgz)
 	@$(call copy_to_website, $(RELDIR)/$(NAME).zip,downloads/$(NAME)/$(NAME)_`cat $(RELDIR)/current.txt`.zip)
 	@$(call copy_to_website, $(RELDIR)/$(NAME)-api.tgz,downloads/$(NAME)/$(NAME)-api_`cat $(RELDIR)/current.txt`.tgz)
-	@$(call exec_on_server, rm -rf $(SRVDIR)/$(NAME)/api)
+	@$(call exec_on_server, if [ -d  $(SRVDIR)/$(NAME)/api ]; then rm -rf $(SRVDIR)/$(NAME)/api; fi)
 	@$(call copy_to_website, $(DOCDIR), $(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
 	@$(call copy_to_website, releasenotes.txt,downloads/$(NAME))
@@ -254,7 +260,7 @@ $(RELDIR)/$(NAME).tgz:  $(shell find $(SRCDIRS)) | updatedeps
 $(RELDIR)/$(NAME).zip:  $(RELDIR)/$(NAME).jar | updatedeps 
 	@if [ ! -d $(RELDIR) ]; then mkdir $(RELDIR); fi
 	@cd $(RELDIR); zip $(NAME).zip $(NAME).jar 
-	@cd $(LIBDIR); zip -g ../$(RELDIR)/$(NAME).zip *
+	@if [ ! $(LIBDIR)="" -a -d $(LIBDIR) ]; then cd $(LIBDIR); zip -g ../$(RELDIR)/$(NAME).zip *; fi
 	
 #archive of api-documentation
 $(RELDIR)/$(NAME)-api.tgz:  $(DOCDIR)
@@ -288,6 +294,7 @@ debug:
 	@echo TESTS=$(TESTS); echo
 	@echo JUNIT=$(JUNIT); echo
 	@echo DOCPACKAGES=$(DOCPACKAGES); echo
+	@echo PACKAGESUMHTML=$(PACKAGESUMHTML); echo
 	@echo PACKAGEHTML=$(PACKAGEHTML); echo
 	@echo DEPS=$(DEPS); echo
 
