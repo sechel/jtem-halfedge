@@ -13,7 +13,7 @@ DOCDIR=doc
 #the snippets for the webpage are put here
 WEBDIR=web
 #the package summary file (source)
-PACKAGEHTML=$(word 1,$(SRCDIRS))/de/jtem/$(NAME)/package.html
+PACKAGEHTML=$(DOCDIR)/de/jtem/$(NAME)/package-info.java
 #the html page to read the websnippets of 
 #(usually the processed PACKAGEHTML: package-summary.html) 
 PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
@@ -36,7 +36,7 @@ TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
 #where to find junit.jar
-JUNIT=junit.jar #$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
+JUNIT=junit.jar#$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
 
 #compile options
 JAVACOPTS=-target 1.5 -source 1.5
@@ -153,7 +153,7 @@ binaries: $(BINDIR)
 $(BINDIR): $(SOURCEFILES) | $(DEPS)
 	@if [ ! -d $(BINDIR) ]; then mkdir $(BINDIR); fi
 	@cp=`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null` ; \
-	javac $(JAVACOPTS) \
+	@javac $(JAVACOPTS) \
 		`if [ -n "$${cp}" ]; then echo -classpath "$${cp}"; fi` \
 		-d $(BINDIR)/ \
 		$(SOURCEFILES) || { rm -rf $(BINDIR); echo "ERROR: compilation failed, folder \"$(BINDIR)\" removed"; exit 1; }
@@ -170,7 +170,7 @@ test: .testscompiled
 ifeq ($(strip $(TESTDIR)),)
 	@echo "No tests, variable TESTDIR is empty."
 else
-	@for test in $(TESTS); do \
+	for test in $(TESTS); do \
 		echo "- JUnitTest: $$test"; \
 		java -ea -classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR):$(TESTBINDIR)" \
 			junit.textui.TestRunner $$test || { echo "JUnit Test failed!" ; exit 1; } \
@@ -182,7 +182,7 @@ endif
 #only compile tests if $(TESTDIR) is non empty
 ifneq ($(strip $(TESTDIR)),)
 	@if [ ! -d $(TESTBINDIR) ]; then mkdir $(TESTBINDIR); fi
-	@javac $(JAVACOPTS) \
+	javac $(JAVACOPTS) \
 		-classpath "`find $(LIBDIR) -name '*.jar' -printf %p: 2> /dev/null`$(JUNIT):$(BINDIR)" \
 		-d $(TESTBINDIR)/ \
 		$(TESTSOURCEFILES)
