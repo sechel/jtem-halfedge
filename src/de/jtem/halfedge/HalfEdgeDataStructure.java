@@ -564,5 +564,11 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 		return HalfEdgeUtils.isValidSurface(this, printReasonForFailureToSystemErr);
 	}
 	
+	public void clear() {
+		vertexList.clear();
+		edgeList.clear();
+		faceList.clear();
+	}
+	
 	
 }
