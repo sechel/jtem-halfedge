@@ -24,7 +24,7 @@ SERVER=
 SRVDIR=/net/www/pub/jtem
 
 #directory for the dependencies
-LIBDIR=lib
+LIBDIR=
 
 #a place to put the archives that constitute a release, before copy to 
 #web site
