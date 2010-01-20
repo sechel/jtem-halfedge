@@ -404,6 +404,18 @@ public final class HalfEdgeUtils {
 		return false;
 	}
 	
+	
+	/**
+	 * Test if a given edge is on the boundary.
+	 * 
+	 * @param e
+	 * @return {@code true} if either e.getLeftFace() == null or e.getRightFace() == null.
+	 */
+	static public <E extends Edge<?, E, ?>> boolean isBoundaryEdge(E e) {
+		return e.getLeftFace() == null || e.getRightFace() == null;
+	}
+	
+	
 	/**
 	 * Test if a given face is an inerior face (that is, not on the boundary).
 	 * <p>
