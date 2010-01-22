@@ -1,2 +1,3 @@
-2009-11-03_rev487
+2009-11-03_rev503
+   HalfEdgeDataStructure.clear() added
 2009-06-23_rev251
