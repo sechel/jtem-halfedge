@@ -36,7 +36,7 @@ TESTBINDIR=$(TESTDIR)
 #exclude the following tests  
 EXCLTESTS=
 #where to find junit.jar
-JUNIT=junit.jar#$(shell locate junit.jar |  grep '/junit.jar' | tail --lines=1)
+JUNIT=junit.jar
 
 #compile options
 JAVACOPTS=-target 1.5 -source 1.5
@@ -92,9 +92,9 @@ DOWNLOADDEPS=$(JTEMURL)/downloads
 
 #function to copy to SRVDIR
 ifeq ($(strip $(SERVER)),)
-  copy_to_website=cp -R $(1) $(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
+  copy_to_website=cp -R $(1) $(SRVDIR)/$(strip $(2)) && echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
 else  
-  copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2)); echo " - copy \"$(1)\" to \" $(SRVDIR)/$(strip $(2))\" "
+  copy_to_website=scp -r $(1) $(SERVER):$(SRVDIR)/$(strip $(2)) && echo " - copy \"$(1)\" to \" $(SERVER):$(SRVDIR)/$(strip $(2))\" "
 endif
 #function to execute on SERVER 
 ifeq ($(strip $(SERVER)),)
@@ -209,7 +209,7 @@ web: $(WEBDIR)/teaser.html $(WEBDIR)/content.html
 	@for f in $?; do $(call copy_to_website,$$f,$(NAME)/$${f#$(WEBDIR)}); done
 	@if [ -d $(dir $(PACKAGEHTML))/doc-files ]; then $(call copy_to_website,$(dir $(PACKAGEHTML))/doc-files,$(NAME)/doc-files); fi
 	@if [ -f  releasenotes.txt ]; then $(call copy_to_website, releasenotes.txt, downloads/$(NAME)); fi
-	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod ug+rw 2> /dev/null)
 	
 $(WEBDIR)/teaser.html: $(DOCDIR)
 	@if [ ! -d $(WEBDIR) ]; then mkdir $(WEBDIR); fi
@@ -242,12 +242,16 @@ release: web test $(DOCDIR) $(RELDIR)/$(NAME).jar $(RELDIR)/$(NAME).tgz $(RELDIR
 	@$(call copy_to_website, $(DOCDIR), $(NAME)/api)
 	@$(call copy_to_website, $(RELDIR)/current.txt,downloads/$(NAME))
 	@$(call copy_to_website, releasenotes.txt,downloads/$(NAME))
-	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod g+rw)
+	@-$(call exec_on_server, find $(SRVDIR) -user `whoami` | xargs chmod ug+rw 2> /dev/null)
 	@echo " - release `cat rel/current.txt` succesfully deployed."
 
 #jar of compiled classes
 $(RELDIR)/$(NAME).jar: $(BINDIR) $(RELDIR)/manifest.txt
 	@if [ ! -d $(RELDIR) ]; then mkdir $(RELDIR); fi
+	@$(foreach dir, $(SRCDIRS), for subdir in `find $(dir) -name .svn -prune -o -type d -print `; \
+		do if [ ! -d $(BINDIR)$${subdir#$(dir)} ]; then mkdir $(BINDIR)$${subdir#$(dir)}; fi; done;)
+	@$(foreach dir, $(SRCDIRS), for file in `find $(dir) -name .svn -prune -o -type f -print `; \
+		do cp -u $${file} $(BINDIR)$${file#$(dir)};  done;)
 	@jar cmf $(RELDIR)/manifest.txt $(RELDIR)/$(NAME).jar -C $(BINDIR) .
 
 #archive of source and jars of all dependencies
