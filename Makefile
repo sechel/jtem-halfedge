@@ -19,7 +19,7 @@ PACKAGEHTML=$(word 1,$(SRCDIRS))/de/jtem/$(NAME)/package-info.java
 PACKAGESUMHTML=$(DOCDIR)/de/jtem/$(NAME)/package-summary.html
 
 #location of the web site, may be empty
-SERVER=
+SERVER=gauss.math.tu-berlin.de
 #directory of the website on the server, or local if SERVER is empty
 SRVDIR=/net/www/pub/jtem
 
