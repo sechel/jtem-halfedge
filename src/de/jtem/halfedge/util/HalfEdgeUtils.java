@@ -34,8 +34,10 @@ package de.jtem.halfedge.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import de.jtem.halfedge.Edge;
 import de.jtem.halfedge.Face;
@@ -867,6 +869,53 @@ public final class HalfEdgeUtils {
 			}
 		}
 		return bc <= 1;
+	}
+	
+	
+	/**
+	 * Inserts the nodes of src into dst
+	 * @param src
+	 * @param dst
+	 * @return The vertex offset of the new vertices in dst
+	 */
+	public static <
+		V extends Vertex<V,E,F>,
+	    E extends Edge<V,E,F>,
+	    F extends Face<V,E,F>,
+	    HDSSRC extends HalfEdgeDataStructure<V, E, F>,
+		VV extends Vertex<VV,EE,FF>,
+	    EE extends Edge<VV,EE,FF>,
+	    FF extends Face<VV,EE,FF>,
+	    HDSDST extends HalfEdgeDataStructure<VV, EE, FF>
+	> int copy(HDSSRC src, HDSDST dst) {
+		Set<E> srcEdges = new HashSet<E>(src.getEdges());
+		int vOffset = dst.numVertices();
+		int eOffset = dst.numEdges();
+		int fOffset = dst.numFaces();
+		dst.addNewVertices(src.numVertices());
+		dst.addNewEdges(src.numEdges());
+		dst.addNewFaces(src.numFaces());
+		for (E e : srcEdges) {
+			E eNext = e.getNextEdge();
+			E eOpp = e.getOppositeEdge();
+			F f = e.getLeftFace();
+			V v = e.getTargetVertex();
+			EE ee = dst.getEdge(eOffset + e.getIndex());
+			ee.setIsPositive(e.isPositive());
+			if (eNext != null) {
+				ee.linkNextEdge(dst.getEdge(eOffset + eNext.getIndex()));
+			}
+			if (eOpp != null) {
+				ee.linkOppositeEdge(dst.getEdge(eOffset + eOpp.getIndex()));
+			}
+			if (f != null) {
+				ee.setLeftFace(dst.getFace(fOffset + f.getIndex()));
+			}
+			if (v != null) {
+				ee.setTargetVertex(dst.getVertex(vOffset + v.getIndex()));
+			}
+		}
+		return vOffset;
 	}
 	
 }
