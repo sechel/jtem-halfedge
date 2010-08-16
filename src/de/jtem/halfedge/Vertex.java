@@ -87,6 +87,10 @@ public abstract class Vertex <V extends Vertex<V, E, F>,
 		this.incomingEdge = e;
 	}
 	
+	/**
+	 * Copies the data fields of the given vertex into this vertex
+	 * @param v
+	 */
 	public void copyData(V v) {
 		
 	}

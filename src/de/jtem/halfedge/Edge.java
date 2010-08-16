@@ -297,6 +297,10 @@ abstract public class Edge <V extends Vertex<V, E, F>,
 	}
 
 	
+	/**
+	 * Copies the data fields of the given edge into this edge
+	 * @param v
+	 */
 	public void copyData(E e) {
 		
 	}

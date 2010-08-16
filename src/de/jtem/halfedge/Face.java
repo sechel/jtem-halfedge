@@ -88,6 +88,10 @@ public abstract class Face <V extends Vertex<V, E, F>,
 	};
 	
 	
+	/**
+	 * Copies the data fields of the given face into this face
+	 * @param f
+	 */
 	public void copyData(F f) {
 		
 	}
