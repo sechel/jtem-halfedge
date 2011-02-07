@@ -311,6 +311,33 @@ public final class HalfEdgeUtils {
 	}
 	
 	/**
+	 * Returns a list containing lists for all boundary components 
+	 * of {@code hds} with left face equal to null.
+	 * @param <E> the edge type
+	 * @param hds the surface
+	 * @return the collection of boundary components
+	 * @see boundaryEdges
+	 */
+	static public <E extends Edge<?,E,?>> List<List<E>> boundaryComponents(HalfEdgeDataStructure<?,E,?> hds) {
+		List<List<E>> result = new ArrayList<List<E>>();
+		Set<E> b = new HashSet<E>(boundaryEdges(hds));
+		while (!b.isEmpty()) {
+			List<E> c = new LinkedList<E>();
+			E first = b.iterator().next();
+			E e = first;
+			do {
+				assert b.contains(e);
+				c.add(e);
+				b.remove(e);
+				e = e.getNextEdge();
+			} while (e != first);
+			result.add(c);
+		}
+		return result;
+	}
+	
+	
+	/**
 	 * Returns a collection of all boundary vertices of {@code surf}. Assumes that {@code surf} represents a valid surface.
 	 * @param <V> the vertex type
 	 * @param <E> the edge type
@@ -840,13 +867,15 @@ public final class HalfEdgeUtils {
 	 * Calculates the genus of the 2-manifold represented
 	 * by the given HalfedgeDataDtructure by evaluating
 	 * X = hds.numVertices() - hds.numEdges() / 2 + hds.numFaces()
-	 * g = (2 - X) / 2
+	 * r = number of boundary components
+	 * g = (2 - X - r) / 2
 	 * @param hds a 2-manifold
 	 * @return g
 	 */
 	public static int getGenus(HalfEdgeDataStructure<?, ?, ?> hds) {
+		int r = boundaryComponents(hds).size();
 		int X = hds.numVertices() - hds.numEdges() / 2 + hds.numFaces();
-		return (2 - X) / 2;
+		return (2 - X - r) / 2;
 	}
 	
 	
