@@ -260,6 +260,42 @@ public final class HalfEdgeUtils {
 	
 	
 	/**
+	 * Return a list of edges which belong to the boundary component
+	 * of e0
+	 * @param <E>
+	 * @param <F>
+	 * @param e0
+	 * @return the list of boundary edges in the correct cyclic order
+	 * starting with the given e
+	 */
+	static public <
+		E extends Edge<?,E,F>, 
+		F extends Face<?,E,F>
+	> List<E> boundaryEdges(E e0) {
+		if (e0 == null) {
+			return Collections.emptyList();
+		}
+		if (e0.getLeftFace() != null) {
+			throw new IllegalArgumentException("No boundary edge given");
+		}
+		LinkedList<E> result = new LinkedList<E>();
+		E e = e0;
+		do {
+			if (null != e.getLeftFace()) {
+				throw new RuntimeException("Edge " + e + " is not a boundary edge, " +
+						"although it is the next edge of an edge which is.");
+			}
+			result.add(e);
+			e = e.getNextEdge();
+			if (e == null) {
+				throw new RuntimeException("Some edge has null as next edge.");
+			}
+		} while (e != e0);
+		return result;
+	}
+
+	
+	/**
 	 * Return a list of the edges which have a given face as left face. 
 	 * <p>
 	 * This method expects that if there is at least one such edge {@code e}, then all such edges, and only those, can be reached by repeatedly
