@@ -429,6 +429,22 @@ public final class HalfEdgeUtils {
 		} while (e != e0);
 		return result;
 	}
+	
+	
+	/**
+	 * Return a list of the edges which have a given vertex as start vertex. 
+	 * @param vertex the vertex
+	 * @return the list of outgoing edges, in clockwise order
+	 * @see incomingEdges
+	 */
+	static public <E extends Edge<V,E,?>, V extends Vertex<V,E,?>> List<E> outgoingEdges(V vertex){
+		List<E> incoming = incomingEdges(vertex);
+		List<E> result = new ArrayList<E>(incoming.size());
+		for (E e : incoming) {
+			result.add(e.getOppositeEdge());
+		}
+		return result;
+	}
 
 	
 	/**
