@@ -601,6 +601,15 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	}
 	
 	public void clear() {
+		for (V v : vertexList) {
+			v.setHalfEdgeDataStructure(null);
+		}
+		for (E e : edgeList) {
+			e.setHalfEdgeDataStructure(null);
+		}
+		for (F f : faceList) {
+			f.setHalfEdgeDataStructure(null);
+		}
 		vertexList.clear();
 		edgeList.clear();
 		faceList.clear();
