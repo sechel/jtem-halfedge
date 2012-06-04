@@ -336,8 +336,8 @@ public final class HalfEdgeUtils {
 	 * @param heds the surface
 	 * @return the collection of boundary edges
 	 */
-	static public <E extends Edge<?,E,?>> Collection<E> boundaryEdges(HalfEdgeDataStructure<?,E,?> heds) {
-		Collection <E>result = new ArrayList<E>();
+	static public <E extends Edge<?,E,?>> List<E> boundaryEdges(HalfEdgeDataStructure<?,E,?> heds) {
+		List<E>result = new ArrayList<E>();
 		for (E e : heds.getEdges()) {
 			if (e.getLeftFace() == null) {
 				result.add(e);
