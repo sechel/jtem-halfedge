@@ -347,6 +347,20 @@ public final class HalfEdgeUtils {
 	}
 	
 	/**
+	 * Returns a collection containing all faces of {@code heds} with at least one boundary edge.
+	 * @param <E> the edge type
+	 * @param heds the surface
+	 * @return the collection of boundary edges
+	 */
+	static public <E extends Edge<?,E,F>, F extends Face<?,E,F>> Collection<F> boundaryFaces(HalfEdgeDataStructure<?,E,F> heds) {
+		Collection<F> result = new HashSet<F>();
+		List<E> boundaryedges = boundaryEdges(heds);
+		for (E e : boundaryedges)
+			result.add(e.getRightFace());
+		return result;
+	}
+	
+	/**
 	 * Returns a list containing lists for all boundary components 
 	 * of {@code hds} with left face equal to null.
 	 * @param <E> the edge type
