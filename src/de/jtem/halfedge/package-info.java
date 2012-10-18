@@ -74,7 +74,7 @@
  * <br> 
  * The parameters of the constructor serve as run time type tokens. <br>
  * <br>
- * &bull; Step 3. Instatiate vertices, edges, and faces using {@link de.jtem.halfedge.HalfEdgeDataStructure#addNewVertex() addNewVertex()}, 
+ * &bull; Step 3. Instantiate vertices, edges, and faces using {@link de.jtem.halfedge.HalfEdgeDataStructure#addNewVertex() addNewVertex()}, 
  * {@link de.jtem.halfedge.HalfEdgeDataStructure#addNewEdge() addNewEdge()}, and {@link de.jtem.halfedge.HalfEdgeDataStructure#addNewFace() addNewFace()},
  * like this:<br>
  * <br>
