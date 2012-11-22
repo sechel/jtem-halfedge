@@ -832,9 +832,9 @@ public final class HalfEdgeUtils {
 		E eResult = constructFaceByVertices(heds, v0, v1, v2, v3);
 		constructFaceByVertices(heds, v0, v4, v5, v1);
 		constructFaceByVertices(heds, v1, v5, v6, v2);
-		constructFaceByVertices(heds, v2, v6, v7, v3);
-		constructFaceByVertices(heds, v3, v7, v4, v0);
-		constructFaceByVertices(heds, v7, v6, v5, v4);		
+		constructFaceByVertices(heds, v7, v3, v2, v6);
+		constructFaceByVertices(heds, v0, v3, v7, v4);
+		constructFaceByVertices(heds, v4, v7, v6, v5);		
 		return eResult;
 	}
 	
