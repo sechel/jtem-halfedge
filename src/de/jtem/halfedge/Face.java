@@ -82,7 +82,7 @@ public abstract class Face <V extends Vertex<V, E, F>,
 		return boundaryEdge;
 	}
 
-	final void setBoundaryEdge(E e) {
+	public final void setBoundaryEdge(E e) {
 		checkHalfEdgeDataStructure(e);
 		this.boundaryEdge = e;
 	};
