@@ -56,9 +56,9 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	private Class<E> eClass = null;	
 	private Class<F> fClass = null;
 	
-	List<V> vertexList = new ArrayList<V>();
-	List<F> faceList = new ArrayList<F>();
-	List<E> edgeList = new ArrayList<E>();	
+	private List<V> vertexList = new ArrayList<V>();
+	private List<F> faceList = new ArrayList<F>();
+	private List<E> edgeList = new ArrayList<E>();	
 	
 	/**
 	 * Instantiate a new half-edge data structure with given 
