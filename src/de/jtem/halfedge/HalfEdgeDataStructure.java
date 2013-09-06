@@ -283,7 +283,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 			throw new RuntimeException(face + " is null or does not belong to " + this + ".");
 		}
 		if (faceList.remove(face)) {
-//			face.setBoundaryEdge(null);
+			face.setBoundaryEdge(null);
 			face.setHalfEdgeDataStructure(null);
 			reindexFaces(face.index);
 			return;

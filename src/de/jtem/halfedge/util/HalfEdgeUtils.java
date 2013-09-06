@@ -427,10 +427,10 @@ public final class HalfEdgeUtils {
 		LinkedList<E> result = new LinkedList<E>();
 		E e = e0;
 		do {
-//			if (vertex != e.getTargetVertex()) {
-//				throw new RuntimeException("Edge " + e + " does not have vertex " + vertex + " as target vertex, " +
-//				"although it is the opposite of the next edge of an edge which does.");
-//			}
+			if (vertex != e.getTargetVertex()) {
+				throw new RuntimeException("Edge " + e + " does not have vertex " + vertex + " as target vertex, " +
+				"although it is the opposite of the next edge of an edge which does.");
+			}
 			result.add(e);
 			e = e.getNextEdge();
 			if (e == null) {

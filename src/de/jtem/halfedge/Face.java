@@ -82,10 +82,8 @@ public abstract class Face <V extends Vertex<V, E, F>,
 		return boundaryEdge;
 	}
 
-	final public void setBoundaryEdge(E e) {
+	final void setBoundaryEdge(E e) {
 		checkHalfEdgeDataStructure(e);
-		if (!hds.getEdges().contains(e))
-			throw new IllegalStateException("Not an edge of this face");
 		this.boundaryEdge = e;
 	};
 	
