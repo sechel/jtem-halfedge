@@ -1,0 +1,62 @@
+<project name="Create halfedge jar and javadoc" default="release" basedir=".">
+	<description>
+		halfedge build file
+	</description>
+	<tstamp>
+		<format property="version" pattern="yyyy-MM-dd"/>
+	</tstamp>
+	
+	<property name="src" location="src" />
+
+	<!-- these folders will be created -->
+	<property name="javadoc_dir" location="docs/api" />
+	<property name="release_dir" location="release" />
+	
+	<target name="init">
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${release_dir}" />
+		<mkdir dir="${javadoc_dir}" />
+	</target>
+
+	<target name="release" depends= "init, javadoc" description="builds the jar and the javadoc">
+			<jar 
+				destfile="${release_dir}/halfedge.jar" 
+				basedir="bin"
+				includes="
+					de/jtem/halfedge/**"
+				update="false"
+			>
+				<manifest>
+					<attribute name="Built-By" value="${user.name}"/>
+					<attribute name="Implementation-Vendor" value="Stefan Sechelman/ Andre Heydt"/>
+					<attribute name="Implementation-Title" value="halfedge"/>
+					<attribute name="Implementation-Version" value="${version}"/>
+					<attribute name="Implementation-URL" value="http://fs.math.tu-berlin.de:8000/svn/jtem/beans/"/>
+								
+				</manifest>
+			</jar>
+			<jar 
+				destfile="${release_dir}/halfedge.jar" 
+				basedir="src"
+				includes="${sdkpackagedir}/**"
+				update="true"
+			/>
+	</target>
+	
+	<target name="javadoc" description="generate javadoc in docs/api">
+		<javadoc destdir="${javadoc_dir}" access="public" author="true" version="true" use="true" useexternalfile="true" windowtitle="beans API" source="1.6">
+			<fileset dir="${src}" defaultexcludes="yes">
+				<include name="de/jtem/**/*.java" />
+			</fileset>
+			
+			<link href="http://docs.oracle.com/javase/6/docs/api/"/>
+			<link href="http://www3.math.tu-berlin.de/jreality/api/"/>
+		</javadoc>
+	</target>
+	
+	<target name="clean" description="clean up">
+		<delete dir="${release_dir}" />
+		<delete dir="${javadoc_dir}"/>
+	</target>
+
+</project>
