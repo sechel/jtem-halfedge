@@ -31,7 +31,7 @@
 					<attribute name="Implementation-Vendor" value="Stefan Sechelman/ Andre Heydt"/>
 					<attribute name="Implementation-Title" value="halfedge"/>
 					<attribute name="Implementation-Version" value="${version}"/>
-					<attribute name="Implementation-URL" value="http://fs.math.tu-berlin.de:8000/svn/jtem/beans/"/>
+					<attribute name="Implementation-URL" value="http://fs.math.tu-berlin.de:8000/svn/jtem/halfedge/"/>
 								
 				</manifest>
 			</jar>
@@ -44,7 +44,7 @@
 	</target>
 	
 	<target name="javadoc" description="generate javadoc in docs/api">
-		<javadoc destdir="${javadoc_dir}" access="public" author="true" version="true" use="true" useexternalfile="true" windowtitle="beans API" source="1.6">
+		<javadoc destdir="${javadoc_dir}" access="public" author="true" version="true" use="true" useexternalfile="true" windowtitle="halfedge API" source="1.6">
 			<fileset dir="${src}" defaultexcludes="yes">
 				<include name="de/jtem/**/*.java" />
 			</fileset>
