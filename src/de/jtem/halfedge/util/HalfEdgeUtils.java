@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import de.jtem.halfedge.Edge;
 import de.jtem.halfedge.Face;
@@ -370,7 +371,7 @@ public final class HalfEdgeUtils {
 	 */
 	static public <E extends Edge<?,E,?>> List<List<E>> boundaryComponents(HalfEdgeDataStructure<?,E,?> hds) {
 		List<List<E>> result = new ArrayList<List<E>>();
-		Set<E> b = new HashSet<E>(boundaryEdges(hds));
+		Set<E> b = new TreeSet<E>(boundaryEdges(hds));
 		while (!b.isEmpty()) {
 			List<E> c = new LinkedList<E>();
 			E first = b.iterator().next();

@@ -44,7 +44,7 @@ abstract public class Node <
 	V extends Vertex<V, E, F>,
 	E extends Edge<V, E, F>,
 	F extends Face<V, E, F>	   
-> {
+> implements Comparable<Node<V, E, F>> {
 
 	int 
 		index = -1;
@@ -103,6 +103,11 @@ abstract public class Node <
 	 */
 	final public HalfEdgeDataStructure<V, E, F> getHalfEdgeDataStructure() {
 		return hds;
+	}
+	
+	@Override
+	public int compareTo(Node<V, E, F> o) {
+		return getIndex() - o.getIndex();
 	}
 
 }

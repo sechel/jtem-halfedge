@@ -9,38 +9,41 @@
 	<property name="src" location="src" />
 
 	<!-- these folders will be created -->
+	<property name="build_dir" location="build" />
 	<property name="javadoc_dir" location="docs/api" />
 	<property name="release_dir" location="release" />
+
+	<property name="source-version" value="1.6"/>
+	<property name="target-version" value="1.6"/>
 	
 	<target name="init">
 		<!-- Create the build directory structure used by compile -->
-		<mkdir dir="${release_dir}" />
-		<mkdir dir="${javadoc_dir}" />
+		<mkdir dir="${build_dir}"/>
+		<mkdir dir="${release_dir}"/>
+		<mkdir dir="${javadoc_dir}"/>
 	</target>
 
-	<target name="release" depends= "init, javadoc" description="builds the jar and the javadoc">
+	<target name="compile" depends="init">
+		<javac source="${source-version}" target="${target-version}" destdir="${build_dir}" debug="true" includeantruntime="false" encoding="UTF-8">
+			<src path="${src}"/>
+		</javac>
+	</target>
+	
+	
+	<target name="release" depends= "compile, javadoc" description="builds the jar and the javadoc">
 			<jar 
 				destfile="${release_dir}/halfedge.jar" 
-				basedir="bin"
-				includes="
-					de/jtem/halfedge/**"
+				basedir="${build_dir}"
 				update="false"
 			>
 				<manifest>
 					<attribute name="Built-By" value="${user.name}"/>
-					<attribute name="Implementation-Vendor" value="Stefan Sechelman/ Andre Heydt"/>
+					<attribute name="Implementation-Vendor" value="Stefan Sechelman and Boris Springborn"/>
 					<attribute name="Implementation-Title" value="halfedge"/>
 					<attribute name="Implementation-Version" value="${version}"/>
 					<attribute name="Implementation-URL" value="http://fs.math.tu-berlin.de:8000/svn/jtem/halfedge/"/>
-								
 				</manifest>
 			</jar>
-			<jar 
-				destfile="${release_dir}/halfedge.jar" 
-				basedir="src"
-				includes="${sdkpackagedir}/**"
-				update="true"
-			/>
 	</target>
 	
 	<target name="javadoc" description="generate javadoc in docs/api">
@@ -55,7 +58,7 @@
 	</target>
 	
 	<target name="clean" description="clean up">
-		<delete dir="${release_dir}" />
+		<delete dir="${build_dir}" />
 		<delete dir="${javadoc_dir}"/>
 	</target>
 
