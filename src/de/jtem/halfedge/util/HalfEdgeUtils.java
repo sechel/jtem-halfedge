@@ -701,6 +701,27 @@ public final class HalfEdgeUtils {
 	}
 
 	/**
+	 * Finds all edges with given left and right faces.
+	 * <p>
+	 * Uses {@link #boundaryEdges(Face)}, so the preconditions explained there apply.
+	 * @param <E> the edge type
+	 * @param <F> the face type
+	 * @param leftFace the left face
+	 * @param rightFace the right face
+	 * @return a list of edges with those faces as left and right face, or an empty list if no such edge exists.
+	 */
+	static public <E extends Edge<?,E,F>, F extends Face<?,E,F>> List<E> findEdgesBetweenFaces(F leftFace, F rightFace) {
+		List<E> result = new LinkedList<E>();
+		for (E e : boundaryEdges(leftFace)) {
+			if (rightFace == e.getRightFace()) {
+				result.add(e);
+			}
+		}
+		return result;
+	}
+	
+	
+	/**
 	 * Construct a new face by giving its vertices in cyclic order. 
 	 * <p>
 	 * This method assumes:<br>
