@@ -687,8 +687,8 @@ public final class HalfEdgeUtils {
 	 * Uses {@link #boundaryEdges(Face)}, so the preconditions explained there apply.
 	 * @param <E> the edge type
 	 * @param <F> the face type
-	 * @param leftFace the left face
-	 * @param rightFace the right face
+	 * @param leftFace the left face (must not be null)
+	 * @param rightFace the right face (can be null)
 	 * @return an edge with those faces as left and right face, or {@code null} if no such edge exists.
 	 */
 	static public <E extends Edge<?,E,F>, F extends Face<?,E,F>> E findEdgeBetweenFaces(F leftFace, F rightFace) {
@@ -706,8 +706,8 @@ public final class HalfEdgeUtils {
 	 * Uses {@link #boundaryEdges(Face)}, so the preconditions explained there apply.
 	 * @param <E> the edge type
 	 * @param <F> the face type
-	 * @param leftFace the left face
-	 * @param rightFace the right face
+	 * @param leftFace the left face (must not be null)
+	 * @param rightFace the right face (can be null)
 	 * @return a list of edges with those faces as left and right face, or an empty list if no such edge exists.
 	 */
 	static public <E extends Edge<?,E,F>, F extends Face<?,E,F>> List<E> findEdgesBetweenFaces(F leftFace, F rightFace) {
