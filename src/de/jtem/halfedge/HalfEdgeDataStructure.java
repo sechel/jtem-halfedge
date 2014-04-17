@@ -48,17 +48,24 @@ import de.jtem.halfedge.util.HalfEdgeUtils;
  * @param <F> the face class of this half-edge data structure
  * @param <V> the vertex class of this half-edge data structure
  */
-public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
-										  E extends Edge<V, E, F>, 
-									      F extends Face<V, E, F> > {
+public class HalfEdgeDataStructure <
+	V extends Vertex<V, E, F>,
+	E extends Edge<V, E, F>, 
+	F extends Face<V, E, F> 
+> {
 
-	private Class<V> vClass = null;
-	private Class<E> eClass = null;	
-	private Class<F> fClass = null;
+	Class<V> vClass = null;
+	Class<E> eClass = null;	
+	Class<F> fClass = null;
 	
-	private List<V> vertexList = new ArrayList<V>();
-	private List<F> faceList = new ArrayList<F>();
-	private List<E> edgeList = new ArrayList<E>();	
+	List<V> vertexList = new ArrayList<V>();
+	List<F> faceList = new ArrayList<F>();
+	List<E> edgeList = new ArrayList<E>();	
+	
+	boolean
+		vertexIndicesDirty = false,
+		edgeIndicesDirty = false,
+		faceIndicesDirty = false;
 	
 	/**
 	 * Instantiate a new half-edge data structure with given 
@@ -90,8 +97,11 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	 * @param fC the face class, used as runtime type token
 	 * @return a combinatorially equivalent copy
 	 */
-	public final <VV extends Vertex<VV,EE,FF>, EE extends Edge<VV,EE,FF>, FF extends Face<VV,EE,FF>> 
-	HalfEdgeDataStructure<VV,EE,FF> createCombinatoriallyEquivalentCopy(Class<VV> vC, Class<EE> eC, Class<FF> fC) {
+	public final <
+		VV extends Vertex<VV,EE,FF>, 
+		EE extends Edge<VV,EE,FF>, 
+		FF extends Face<VV,EE,FF>
+	> HalfEdgeDataStructure<VV,EE,FF> createCombinatoriallyEquivalentCopy(Class<VV> vC, Class<EE> eC, Class<FF> fC) {
 		return createCombinatoriallyEquivalentCopy(new HalfEdgeDataStructure<VV,EE,FF>(vC, eC, fC));
 	}
 	
@@ -103,11 +113,12 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	 * @param heds The half-edge data structure to fill.
 	 * @return heds
 	 */
-	public final <VV extends Vertex<VV,EE,FF>, 
-				  EE extends Edge<VV,EE,FF>, 
-				  FF extends Face<VV,EE,FF>, 
-				  HEDS extends HalfEdgeDataStructure<VV,EE,FF>>
-	HEDS createCombinatoriallyEquivalentCopy(HEDS heds) {
+	public final <
+		VV extends Vertex<VV,EE,FF>, 
+		EE extends Edge<VV,EE,FF>, 
+		FF extends Face<VV,EE,FF>, 
+		HEDS extends HalfEdgeDataStructure<VV,EE,FF>
+	> HEDS createCombinatoriallyEquivalentCopy(HEDS heds) {
 		heds.vertexList.clear();
 		heds.edgeList.clear();
 		heds.faceList.clear();
@@ -285,7 +296,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 		if (faceList.remove(face)) {
 			face.setBoundaryEdge(null);
 			face.setHalfEdgeDataStructure(null);
-			reindexFaces(face.index);
+			faceIndicesDirty = true;
 			return;
 		}
 		assert false;
@@ -319,7 +330,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 			edge.linkNextEdge(null);
 			edge.linkPreviousEdge(null);
 			edge.setHalfEdgeDataStructure(null);
-			reindexEdges(edge.index);
+			edgeIndicesDirty = true;
 			return;
 		}
 		assert false;
@@ -350,7 +361,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 		if (vertexList.remove(vertex)){
 			vertex.setIncomingEdge(null);
 			vertex.setHalfEdgeDataStructure(null);
-			reindexVertices(vertex.index);
+			vertexIndicesDirty = true;
 			return;
 		}
 		assert false;
@@ -364,6 +375,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	 * @throws IndexOutOfBoundsException if the index is out of range 
 	 */
 	public final V getVertex(int index) throws IndexOutOfBoundsException {
+		if (vertexIndicesDirty) reindexVertices(0);
 		return getNode(vertexList, index);
 	}
 	
@@ -373,6 +385,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	 * @return the edge
 	 */
 	public final E getEdge(int index){
+		if (edgeIndicesDirty) reindexEdges(0);
 		return getNode(edgeList, index);
 	}
 
@@ -382,6 +395,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 	 * @return the face
 	 */
 	public final F getFace(int index){
+		if (faceIndicesDirty) reindexFaces(0);
 		return getNode(faceList, index);
 	}
 	
@@ -397,6 +411,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 		while (it.hasNext()) {
 			it.next().setIndex(start++);
 		}
+		vertexIndicesDirty = false;
 	}
 	
 	void reindexEdges(int start) {
@@ -404,6 +419,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 		while (it.hasNext()) {
 			it.next().setIndex(start++);
 		}
+		edgeIndicesDirty = false;
 	}
 	
 	void reindexFaces(int start) {
@@ -411,6 +427,7 @@ public class HalfEdgeDataStructure <V extends Vertex<V, E, F>,
 		while (it.hasNext()) {
 			it.next().setIndex(start++);
 		}
+		faceIndicesDirty = false;
 	}
 	
 	

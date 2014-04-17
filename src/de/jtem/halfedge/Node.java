@@ -53,6 +53,15 @@ abstract public class Node <
 	
 
 	public final int getIndex() {
+		if (this instanceof Vertex && hds != null && hds.vertexIndicesDirty) {
+			hds.reindexVertices(0);
+		} else
+		if (this instanceof Edge && hds != null && hds.edgeIndicesDirty) {
+			hds.reindexEdges(0);
+		} else
+		if (this instanceof Face && hds != null && hds.faceIndicesDirty) {
+			hds.reindexFaces(0);
+		}
 		return index;
 	}
 	

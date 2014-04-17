@@ -47,7 +47,7 @@
 	</target>
 	
 	<target name="javadoc" description="generate javadoc in docs/api">
-		<javadoc destdir="${javadoc_dir}" access="public" author="true" version="true" use="true" useexternalfile="true" windowtitle="halfedge API" source="1.6">
+		<javadoc destdir="${javadoc_dir}" encoding="UTF-8" access="public" author="true" version="true" use="true" useexternalfile="true" windowtitle="halfedge API" source="1.6">
 			<fileset dir="${src}" defaultexcludes="yes">
 				<include name="de/jtem/**/*.java" />
 			</fileset>

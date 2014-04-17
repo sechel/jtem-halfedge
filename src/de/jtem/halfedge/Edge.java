@@ -66,13 +66,17 @@ abstract public class Edge <V extends Vertex<V, E, F>,
 							E extends Edge<V, E, F>, 
 							F extends Face<V, E, F>> extends Node<V, E, F> {
 
-	private E nextEdge = null;
-	private E previousEdge = null;
-	private E oppositeEdge = null;
-	private V targetVertex = null;
-	private F leftFace = null;
-	private boolean isPositive = false;
-	private E self = null;
+	E 
+		self = null,
+		nextEdge = null,
+		previousEdge = null,
+		oppositeEdge = null;
+	V 
+		targetVertex = null;
+	F 
+		leftFace = null;
+	boolean 
+		isPositive = false;
 	
 	public static class Naked extends Edge<Vertex.Naked, Edge.Naked, Face.Naked> {}; 
 	
@@ -82,7 +86,6 @@ abstract public class Edge <V extends Vertex<V, E, F>,
 		assert this == self;
 		this.self = self;
 	}
-	
 	
 	/**
 	 * Returns the face on the left of this edge. May return <code>null</code>.
@@ -299,10 +302,9 @@ abstract public class Edge <V extends Vertex<V, E, F>,
 	
 	/**
 	 * Copies the data fields of the given edge into this edge
-	 * @param v
+	 * @param e
 	 */
 	public void copyData(E e) {
-		
 	}
 	
 }
