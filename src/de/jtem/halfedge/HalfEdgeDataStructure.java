@@ -181,7 +181,7 @@ public class HalfEdgeDataStructure <
 	 * @return the newly created vertex
 	 * @throws RuntimeException if an instance of the vertex class cannot be instantiated
 	 */
-	public final V addNewVertex() throws RuntimeException{
+	public synchronized final V addNewVertex() throws RuntimeException{
 		V vertex = null;
 		try {
 			vertex = getVertexClass().newInstance();
@@ -213,7 +213,7 @@ public class HalfEdgeDataStructure <
 	 * @return the newly created edge
 	 * @throws RuntimeException if an instance of the edge class cannot be instantiated
 	 */
-	public final E addNewEdge(){
+	public synchronized final E addNewEdge(){
 		E edge = null;
 		try {
 			edge = getEdgeClass().newInstance();
@@ -246,7 +246,7 @@ public class HalfEdgeDataStructure <
 	 * @return the newly created face
 	 * @throws RuntimeException if an instance of the face class cannot be instantiated
 	 */
-	public final F addNewFace(){
+	public synchronized final F addNewFace(){
 		F face = null;
 		try {
 			face = getFaceClass().newInstance();
@@ -286,7 +286,7 @@ public class HalfEdgeDataStructure <
 	 * @throws RuntimeException if <code>face</code> does not belong 
 	 * to this half-edge data structure
 	 */
-	public final void removeFace(Face<?,?,?> face) throws RuntimeException {
+	public synchronized final void removeFace(Face<?,?,?> face) throws RuntimeException {
 		if (face == null) {
 			return;
 		}
@@ -316,7 +316,7 @@ public class HalfEdgeDataStructure <
 	 * @throws RuntimeException if <code>edge</code> does not belong 
 	 * to this half-edge data structure
 	 */
-	public final void removeEdge(Edge<?,?,?> edge) throws RuntimeException {
+	public synchronized final void removeEdge(Edge<?,?,?> edge) throws RuntimeException {
 		if (edge == null) {
 			return;
 		}
@@ -352,7 +352,7 @@ public class HalfEdgeDataStructure <
 	 * @throws RuntimeException if <code>vertex</code> does not belong 
 	 * to this half-edge data structure
 	 */
-	public final void removeVertex(Vertex<?,?,?> vertex){
+	public synchronized final void removeVertex(Vertex<?,?,?> vertex){
 		if (vertex == null)
 			return;
 		if (this != vertex.getHalfEdgeDataStructure()) {
@@ -406,7 +406,7 @@ public class HalfEdgeDataStructure <
 	}
 	
 	
-	void reindexVertices(int start) {
+	synchronized void reindexVertices(int start) {
 		Iterator<V> it = vertexList.listIterator(start);
 		while (it.hasNext()) {
 			it.next().setIndex(start++);
@@ -414,7 +414,7 @@ public class HalfEdgeDataStructure <
 		vertexIndicesDirty = false;
 	}
 	
-	void reindexEdges(int start) {
+	synchronized void reindexEdges(int start) {
 		Iterator<E> it = edgeList.listIterator(start);
 		while (it.hasNext()) {
 			it.next().setIndex(start++);
@@ -422,7 +422,7 @@ public class HalfEdgeDataStructure <
 		edgeIndicesDirty = false;
 	}
 	
-	void reindexFaces(int start) {
+	synchronized void reindexFaces(int start) {
 		Iterator<F> it = faceList.listIterator(start);
 		while (it.hasNext()) {
 			it.next().setIndex(start++);
