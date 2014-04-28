@@ -531,6 +531,26 @@ public final class HalfEdgeUtils {
 		return false;
 	}
 	
+	/**
+	 * For a boundary vertex, the incoming edge with getRightFace() == null
+	 * is returned.
+	 * <p>
+	 * Uses {@link #incomingEdges(Vertex)}, so the preconditions explained there apply.
+	 * 
+	 * @param vertex
+	 * @return The first boundary edge that is found with the given vertex as target, 
+	 * null if the vertex is no boundary vertex.
+	 */
+	static public <V extends Vertex<V,E,?>,E extends Edge<V,E,?>> E incomingBoundaryEdge(V vertex) {
+		List<E> incoming = incomingEdges(vertex);
+		for (E e : incoming) {
+			if (e.getRightFace() == null) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * Test if a given edge is on the boundary.
