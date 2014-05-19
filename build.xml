@@ -10,7 +10,7 @@
 
 	<!-- these folders will be created -->
 	<property name="build_dir" location="build" />
-	<property name="javadoc_dir" location="docs/api" />
+	<property name="javadoc_dir" location="doc/api" />
 	<property name="release_dir" location="release" />
 
 	<property name="source-version" value="1.6"/>
@@ -46,7 +46,7 @@
 			</jar>
 	</target>
 	
-	<target name="javadoc" description="generate javadoc in docs/api">
+	<target name="javadoc" description="generate javadoc in doc/api">
 		<javadoc destdir="${javadoc_dir}" encoding="UTF-8" access="public" author="true" version="true" use="true" useexternalfile="true" windowtitle="halfedge API" source="1.6">
 			<fileset dir="${src}" defaultexcludes="yes">
 				<include name="de/jtem/**/*.java" />
